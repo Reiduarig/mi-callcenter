@@ -32,6 +32,7 @@ class AgentIndex extends Component
             
         return view('livewire.agents.agent-index', [
             'agents' => $agents,
-        ]);
+        ])
+        ->layout('layouts.app');
     }
 }

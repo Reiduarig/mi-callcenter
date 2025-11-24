@@ -3,6 +3,7 @@
 namespace App\Livewire\Agents;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 
 class AgentForm extends Component
 {
@@ -12,16 +13,13 @@ class AgentForm extends Component
     public $status = 'available';
     public $skill_group;
 
-    protected $listeners = [
-        'editAgent' => 'loadAgent'
-    ];
-
     protected $rules = [
         'userId' => 'required|exists:users,id',
         'employee_code' => 'required|unique:agents,employee_code',
         'status' => 'required',
     ];
 
+    #[On('editAgent')]
     public function loadAgent($id)
     {
         $agent = Agent::findOrFail($id);
@@ -74,6 +72,7 @@ class AgentForm extends Component
         $users = User::whereDoesntHave('agent')->get(); // usuarios que no son agentes aún
         return view('livewire.agents.agent-form', [
             'users' => $users,
-        ]);
+        ])
+        ->layout('layouts.app');
     }
 }
