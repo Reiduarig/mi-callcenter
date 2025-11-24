@@ -33,6 +33,18 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('agents.index')" :active="request()->routeIs('agents.index')" wire:navigate>
+                        {{ __('Agentes') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('staff.employees.index')" :active="request()->routeIs('staff.employees.index')" wire:navigate>
+                        {{ __('Empleados') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('staff.shifts.index')" :active="request()->routeIs('staff.shifts.index')" wire:navigate>
+                        {{ __('Turnos') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('staff.absences.index')" :active="request()->routeIs('staff.absences.index')" wire:navigate>
+                        {{ __('Ausencias') }}
+                    </x-nav-link>
                 </div>
             </div>
 
