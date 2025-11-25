@@ -1,28 +1,29 @@
 <?php
+
 namespace App\Domains\Staff\Services;
 
 use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Models\Employee;
+use App\Models\User;
 
 class AbsenceService
 {
     /**
-     * Verifica si un empleado tiene ausencia en una fecha.
+     * Verifica si un usuario tiene ausencia en una fecha.
      */
-    public function hasAbsence(Employee $employee, string $date): bool
+    public function hasAbsence(User $user, string $date): bool
     {
-        return Absence::where('employee_id', $employee->id)
-                      ->where('start_date', '<=', $date)
-                      ->where('end_date', '>=', $date)
-                      ->where('status', 'approved')
-                      ->exists();
+        return Absence::where('user_id', $user->id)
+            ->where('start_date', '<=', $date)
+            ->where('end_date', '>=', $date)
+            ->where('status', 'approved')
+            ->exists();
     }
 
     /**
-     * Obtiene todas las ausencias de un empleado.
+     * Obtiene todas las ausencias de un usuario.
      */
-    public function getAbsences(Employee $employee)
+    public function getAbsences(User $user)
     {
-        return $employee->absences()->orderBy('start_date')->get();
+        return $user->absences()->orderBy('start_date')->get();
     }
 }
