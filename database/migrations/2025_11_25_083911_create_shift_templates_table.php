@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('shift_templates', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('email')->unique();
-            $table->string('employee_code')->unique();
-            $table->string('position')->nullable(); // cargo o rol en el call center
-            $table->timestamp('hired_at')->nullable();
+            $table->string('name'); // Mañana, Tarde, Noche, etc.
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->string('color', 7)->default('#3B82F6'); // Hex color para UI
+            $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->default(0); // Para ordenar en UI
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('shift_templates');
     }
 };

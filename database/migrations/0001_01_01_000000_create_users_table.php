@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->foreignId('supervisor_id')->nullable()->after('is_active')->constrained('users')->nullOnDelete();
+            $table->timestamp('hired_at')->nullable()->after('supervisor_id');
+            $table->integer('annual_vacation_days')->default(20)->after('hired_at');
+            $table->integer('used_vacation_days')->default(0)->after('annual_vacation_days');
+
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

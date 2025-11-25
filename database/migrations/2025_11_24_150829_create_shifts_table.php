@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date');             // día del turno
             $table->time('start_time');       // inicio
             $table->time('end_time');         // fin
-            $table->string('status')->default('scheduled'); // scheduled, completed, canceled
+            $table->foreignId('shift_template_id')->nullable()->after('user_id')->constrained('shift_templates')->nullOnDelete();
+            $table->boolean('is_custom')->default(false)->after('shift_template_id'); // true si horarios fueron personalizados
+
             $table->timestamps();
         });
     }

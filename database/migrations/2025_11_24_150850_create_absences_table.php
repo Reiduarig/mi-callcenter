@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('absences', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('type'); // vacation, sick_leave, personal
             $table->date('start_date');
             $table->date('end_date');
