@@ -1,35 +1,33 @@
-<?php 
+<?php
 
 namespace App\Domains\Staff\Services;
 
 use App\Domains\Staff\Models\Shift;
-use App\Domains\Staff\Models\Employee;
-use Carbon\Carbon;
+use App\Models\User;
 
 class ShiftService
 {
     /**
-     * Genera un turno para un empleado.
+     * Genera un turno para un usuario.
      */
-    public function assignShift(Employee $employee, string $date, string $startTime, string $endTime): Shift
+    public function assignShift(User $user, string $date, string $startTime, string $endTime): Shift
     {
         return Shift::create([
-            'employee_id' => $employee->id,
+            'user_id' => $user->id,
             'date' => $date,
             'start_time' => $startTime,
-            'end_time' => $endTime,
-            'status' => 'scheduled',
+            'end_time' => $endTime
         ]);
     }
 
     /**
-     * Obtiene todos los turnos de un empleado en un rango de fechas.
+     * Obtiene todos los turnos de un usuario en un rango de fechas.
      */
-    public function getShifts(Employee $employee, string $startDate, string $endDate)
+    public function getShifts(User $user, string $startDate, string $endDate)
     {
-        return Shift::where('employee_id', $employee->id)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->orderBy('date')
-                    ->get();
+        return Shift::where('user_id', $user->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date')
+            ->get();
     }
 }
