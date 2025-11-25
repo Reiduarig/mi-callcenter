@@ -28,9 +28,15 @@
             @endif
 
             <!-- Page Content -->
-            <main class="p-6">
+            <main class="p-6 max-w-7xl">
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Toast Notifications -->
+        <x-toast />
+        
+        <!-- Confirm Delete Modal -->
+        <x-confirm-delete />
     </body>
 </html>
