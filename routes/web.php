@@ -1,32 +1,25 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Livewire\Actions\Logout;
-use App\Livewire\Staff\UserIndex;
-use App\Livewire\Staff\UserForm;
-use App\Livewire\Staff\ShiftIndex;
-use App\Livewire\Staff\ShiftForm;
-use App\Livewire\Staff\ShiftCalendar;
-use App\Livewire\Staff\ShiftTemplateIndex;
-use App\Livewire\Staff\ShiftTemplateForm;
-use App\Livewire\Staff\AbsenceIndex;
+use App\Livewire\Dashboard;
 use App\Livewire\Staff\AbsenceForm;
-use App\Livewire\Staff\RoleIndex;
+use App\Livewire\Staff\AbsenceIndex;
 use App\Livewire\Staff\RoleForm;
+use App\Livewire\Staff\RoleIndex;
+use App\Livewire\Staff\ShiftCalendar;
+use App\Livewire\Staff\ShiftForm;
+use App\Livewire\Staff\ShiftIndex;
+use App\Livewire\Staff\ShiftTemplateForm;
+use App\Livewire\Staff\ShiftTemplateIndex;
+use App\Livewire\Staff\UserForm;
+use App\Livewire\Staff\UserIndex;
+use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+Route::redirect('/', '/login');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard - Todos los usuarios autenticados
-    Route::get('/dashboard', \App\Livewire\Dashboard::class)
+    Route::get('/dashboard', Dashboard::class)
         ->middleware('permission:view-dashboard')
         ->name('dashboard');
 
@@ -84,9 +77,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('staff/roles/{roleId}/edit', RoleForm::class)->name('staff.roles.edit');
     });
 
+    Route::view('profile', 'profile')->name('profile');
+
     Route::post('logout', function () {
-        (new Logout())();
-        return redirect('/');
+        (new Logout)();
+
+        return redirect()->route('login');
     })->name('logout');
 });
 
