@@ -1,4 +1,4 @@
-<div class="py-6">
+<div class="py-6"  x-on:confirmed-delete.window="$wire.delete($event.detail.id)">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -9,7 +9,7 @@
                     </div>
                     @can('manage-shift-templates')
                         <a href="{{ route('staff.shift-templates.create') }}" wire:navigate
-                           class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition">
                             <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -66,8 +66,7 @@
                                             Editar
                                         </a>
                                         @if($template->shifts()->count() === 0)
-                                            <button wire:click="delete({{ $template->id }})"
-                                                    wire:confirm="¿Estás seguro de eliminar esta plantilla?"
+                                            <button wire:click="confirmDelete({{ $template->id }})"
                                                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm">
                                                 Eliminar
                                             </button>

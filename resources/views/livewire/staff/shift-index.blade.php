@@ -6,19 +6,21 @@
                     <h2 class="text-2xl font-bold">Turnos</h2>
                     <div class="flex gap-3">
                         <a href="{{ route('staff.shifts.calendar') }}" wire:navigate
-                           class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition inline-flex items-center">
+                           class="px-4 py-2 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700 transition inline-flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             Ver Calendario
                         </a>
                         <a href="{{ route('staff.shifts.create') }}" wire:navigate
-                           class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                            + Nuevo Turno
+                           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition">
+                           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Nuevo Turno
                         </a>
                     </div>
                 </div>
-
                 <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" 
                            wire:model.live.debounce.300ms="search" 

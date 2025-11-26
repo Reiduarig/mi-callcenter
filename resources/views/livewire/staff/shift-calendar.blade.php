@@ -1,6 +1,3 @@
-@section('page-title', 'Calendario de Turnos')
-@section('page-subtitle', 'Visualización y gestión de turnos')
-
 <div class="space-y-6">
     
     <!-- Calendar Controls -->
@@ -48,7 +45,7 @@
 
                 <!-- New Shift Button -->
                 <a href="{{ route('staff.shifts.create') }}"  wire:navigate
-                   class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-md">
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-md">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
