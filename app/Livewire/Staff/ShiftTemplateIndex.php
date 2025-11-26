@@ -8,10 +8,19 @@ use Livewire\Component;
 
 class ShiftTemplateIndex extends Component
 {
+
+    public ?int $deleteId = null;
+
     #[On('templateSaved')]
     public function refresh(): void
     {
         // Refresh component
+    }
+
+    public function confirmDelete(int $id): void
+    {
+        $this->deleteId = $id;
+        $this->dispatch('confirm-delete', id: $id);
     }
 
     public function delete(int $id): void
@@ -29,7 +38,7 @@ class ShiftTemplateIndex extends Component
             }
 
             $template->delete();
-
+            $this->deleteId = null;
             $this->dispatch('toast', message: 'Plantilla eliminada exitosamente', type: 'success');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error al eliminar: '.$e->getMessage(), type: 'error');
