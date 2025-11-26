@@ -261,7 +261,7 @@ class ShiftValidationService
             $details['shifts'] = $shifts->map(fn ($s) => [
                 'id' => $s->id,
                 'start_time' => $s->start_time,
-                'end_time' => $s->end_time
+                'end_time' => $s->end_time,
             ])->toArray();
         }
 

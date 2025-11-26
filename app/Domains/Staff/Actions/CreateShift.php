@@ -38,7 +38,7 @@ class CreateShift
             'is_custom' => $data['is_custom'] ?? false,
             'date' => $data['date'],
             'start_time' => $data['start_time'],
-            'end_time' => $data['end_time']
+            'end_time' => $data['end_time'],
         ]);
     }
 }

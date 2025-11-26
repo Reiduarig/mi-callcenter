@@ -1,5 +1,3 @@
-@section('page-subtitle', 'Resumen general del sistema')
-
 <div class="space-y-6">
     
     <!-- Stats Grid -->

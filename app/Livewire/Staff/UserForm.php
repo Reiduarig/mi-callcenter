@@ -126,7 +126,7 @@ class UserForm extends Component
             session()->flash('success', $message);
 
             return $this->redirect(route('staff.users.index'), navigate: true);
-            
+
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error: '.$e->getMessage(), type: 'error');
         }

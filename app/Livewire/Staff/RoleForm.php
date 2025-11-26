@@ -49,7 +49,7 @@ class RoleForm extends Component
             $this->role->syncPermissions($this->selectedPermissions);
 
             session()->flash('success', 'Rol guardado correctamente');
-            
+
             return redirect()->route('staff.roles.index');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error al guardar: '.$e->getMessage(), type: 'error');

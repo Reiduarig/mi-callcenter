@@ -78,8 +78,9 @@ class AbsenceForm extends Component
 
             $message = $this->absenceId ? 'Ausencia actualizada exitosamente' : 'Ausencia creada exitosamente';
             session()->flash('success', $message);
+
             return $this->redirect(route('staff.absences.index'), navigate: true);
-            
+
         } catch (\Exception $e) {
             // Mostrar error de validación o error general
             $errorMessage = $e->getMessage();

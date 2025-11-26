@@ -48,7 +48,7 @@ class ShiftForm extends Component
             'is_custom' => 'boolean',
             'use_date_range' => 'boolean',
             'exclude_weekends' => 'boolean',
-            'date' => 'required|date|after_or_equal:today'
+            'date' => 'required|date|after_or_equal:today',
         ];
 
         // En modo rango de fechas con plantilla, start_time y end_time no son necesarios
@@ -115,7 +115,7 @@ class ShiftForm extends Component
                     'is_custom' => $this->is_custom,
                     'date' => $this->date,
                     'start_time' => $this->start_time,
-                    'end_time' => $this->end_time
+                    'end_time' => $this->end_time,
                 ];
                 app(UpdateShift::class)->execute(Shift::findOrFail($this->shiftId), $data);
                 $message = 'Turno actualizado exitosamente';
@@ -147,7 +147,7 @@ class ShiftForm extends Component
                     'is_custom' => $this->is_custom,
                     'date' => $this->date,
                     'start_time' => $this->start_time,
-                    'end_time' => $this->end_time
+                    'end_time' => $this->end_time,
                 ];
                 app(CreateShift::class)->execute($data);
                 $message = 'Turno creado exitosamente';

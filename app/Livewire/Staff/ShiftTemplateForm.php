@@ -114,6 +114,6 @@ class ShiftTemplateForm extends Component
     public function render()
     {
         return view('livewire.staff.shift-template-form')
-        ->layout('layouts.app-sidebar', ['title' => $this->templateId ? 'Editar Plantilla de Turno' : 'Crear Plantilla de Turno']);
+            ->layout('layouts.app-sidebar', ['title' => $this->templateId ? 'Editar Plantilla de Turno' : 'Crear Plantilla de Turno']);
     }
 }

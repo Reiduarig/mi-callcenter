@@ -42,7 +42,7 @@ class UpdateShift
             'user_id' => $userId,
             'date' => $date,
             'start_time' => $startTime,
-            'end_time' => $endTime
+            'end_time' => $endTime,
         ]);
 
         return $shift->fresh();

@@ -23,7 +23,7 @@ class Shift extends Model
         'is_custom',
         'date',
         'start_time',
-        'end_time'
+        'end_time',
     ];
 
     protected $casts = [
