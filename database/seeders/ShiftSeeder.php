@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Domains\Staff\Models\Shift;
+use App\Models\Shift;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;

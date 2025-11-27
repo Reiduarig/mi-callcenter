@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Domains\Staff\Models\Absence;
+use App\Models\Absence;
 use App\Models\User;
 use Illuminate\Console\Command;
 

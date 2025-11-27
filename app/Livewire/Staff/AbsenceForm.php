@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Enums\AbsenceStatus;
-use App\Domains\Staff\Enums\AbsenceType;
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Requests\StoreAbsenceRequest;
-use App\Domains\Staff\Requests\UpdateAbsenceRequest;
-use App\Domains\Staff\Services\AbsenceService;
-use App\Domains\Staff\Traits\FiltersDataByRole;
+use App\Enums\AbsenceStatus;
+use App\Enums\AbsenceType;
+use App\Models\Absence;
+use App\Http\Requests\StoreAbsenceRequest;
+use App\Http\Requests\UpdateAbsenceRequest;
+use App\Services\AbsenceService;
+use App\Traits\FiltersDataByRole;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -121,13 +121,13 @@ class AbsenceForm extends Component
 
             return $this->redirect(route('staff.absences.index'), navigate: true);
 
-        } catch (\App\Domains\Staff\Exceptions\ValidationException $e) {
+        } catch (\App\Exceptions\ValidationException $e) {
             $this->addError('general', $e->getUserMessage());
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
-        } catch (\App\Domains\Staff\Exceptions\InsufficientVacationDaysException $e) {
+        } catch (\App\Exceptions\InsufficientVacationDaysException $e) {
             $this->addError('general', $e->getUserMessage());
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
-        } catch (\App\Domains\Staff\Exceptions\InvalidAbsenceStatusException $e) {
+        } catch (\App\Exceptions\InvalidAbsenceStatusException $e) {
             $this->addError('general', $e->getUserMessage());
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
         } catch (\Exception $e) {

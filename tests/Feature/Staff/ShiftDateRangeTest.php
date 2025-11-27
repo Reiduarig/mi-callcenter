@@ -1,7 +1,7 @@
 <?php
 
-use App\Domains\Staff\Models\Shift;
-use App\Domains\Staff\Models\ShiftTemplate;
+use App\Models\Shift;
+use App\Models\ShiftTemplate;
 use App\Livewire\Staff\ShiftForm;
 use App\Models\User;
 use Carbon\Carbon;

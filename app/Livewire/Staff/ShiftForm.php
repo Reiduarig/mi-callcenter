@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Models\Shift;
-use App\Domains\Staff\Models\ShiftTemplate;
-use App\Domains\Staff\Requests\StoreShiftRequest;
-use App\Domains\Staff\Requests\UpdateShiftRequest;
-use App\Domains\Staff\Services\ShiftService;
+use App\Models\Shift;
+use App\Models\ShiftTemplate;
+use App\Http\Requests\StoreShiftRequest;
+use App\Http\Requests\UpdateShiftRequest;
+use App\Services\ShiftService;
 use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -153,10 +153,10 @@ class ShiftForm extends Component
             session()->flash('success', $message);
 
             return $this->redirect(route('staff.shifts.index'), navigate: true);
-        } catch (\App\Domains\Staff\Exceptions\ValidationException $e) {
+        } catch (\App\Exceptions\ValidationException $e) {
             $this->addError('general', $e->getUserMessage());
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
-        } catch (\App\Domains\Staff\Exceptions\ShiftConflictException $e) {
+        } catch (\App\Exceptions\ShiftConflictException $e) {
             $this->addError('general', $e->getUserMessage());
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
         } catch (\Exception $e) {

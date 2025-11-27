@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Domains\Staff\Models\ShiftTemplate;
+use App\Models\ShiftTemplate;
 use Illuminate\Database\Seeder;
 
 class ShiftTemplateSeeder extends Seeder

@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Actions\ApproveAbsence;
-use App\Domains\Staff\Actions\RejectAbsence;
-use App\Domains\Staff\DataTransferObjects\ApprovalData;
-use App\Domains\Staff\Models\Absence;
+use App\Actions\ApproveAbsence;
+use App\Actions\RejectAbsence;
+use App\DataTransferObjects\ApprovalData;
+use App\Models\Absence;
+use App\Exceptions\InsufficientVacationDaysException;
+use App\Exceptions\InvalidAbsenceStatusException;
 use Livewire\Component;
 
 class AbsenceApproval extends Component
@@ -57,9 +59,9 @@ class AbsenceApproval extends Component
             $this->closeModal();
             $this->dispatch('absenceSaved');
             $this->dispatch('toast', message: $message, type: 'success');
-        } catch (\App\Domains\Staff\Exceptions\InvalidAbsenceStatusException $e) {
+        } catch (InvalidAbsenceStatusException $e) {
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
-        } catch (\App\Domains\Staff\Exceptions\InsufficientVacationDaysException $e) {
+        } catch (InsufficientVacationDaysException $e) {
             $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error: '.$e->getMessage(), type: 'error');

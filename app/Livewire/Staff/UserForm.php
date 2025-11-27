@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Requests\StoreUserRequest;
-use App\Domains\Staff\Requests\UpdateUserRequest;
-use App\Domains\Staff\Services\UserService;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
 use App\Models\User;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
