@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Exceptions\ShiftTemplateCannotBeDeletedException;
-use App\Domains\Staff\Models\ShiftTemplate;
-use App\Domains\Staff\Services\ShiftTemplateService;
+use App\Exceptions\ShiftTemplateCannotBeDeletedException;
+use App\Models\ShiftTemplate;
+use App\Services\ShiftTemplateService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Domains\Staff\Enums\AbsenceStatus;
-use App\Domains\Staff\Enums\AbsenceType;
-use App\Domains\Staff\Models\Absence;
+use App\Enums\AbsenceStatus;
+use App\Enums\AbsenceType;
+use App\Models\Absence;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 

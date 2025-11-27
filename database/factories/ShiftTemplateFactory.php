@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Domains\Staff\Models\ShiftTemplate;
+use App\Models\ShiftTemplate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

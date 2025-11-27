@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Exceptions\UserCannotBeDeletedException;
-use App\Domains\Staff\Services\UserService;
+use App\Exceptions\UserCannotBeDeletedException;
+use App\Services\UserService;
 use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Models\ShiftTemplate;
-use App\Domains\Staff\Services\ShiftTemplateService;
+use App\Models\ShiftTemplate;
+use App\Services\ShiftTemplateService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;

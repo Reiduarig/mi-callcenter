@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Domains\Staff\Services\DashboardMetricsService;
+use App\Services\DashboardMetricsService;
 use Livewire\Component;
 
 class Dashboard extends Component

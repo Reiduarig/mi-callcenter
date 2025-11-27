@@ -1,6 +1,6 @@
 <?php
 
-use App\Domains\Staff\Models\Absence;
+use App\Models\Absence;
 use App\Livewire\Staff\AbsenceForm;
 use App\Models\User;
 use Livewire\Livewire;

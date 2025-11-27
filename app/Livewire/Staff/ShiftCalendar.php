@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Models\Shift;
-use App\Domains\Staff\Traits\FiltersDataByRole;
+use App\Models\Absence;
+use App\Models\Shift;
+use App\Traits\FiltersDataByRole;
 use Carbon\Carbon;
 use Livewire\Component;
 

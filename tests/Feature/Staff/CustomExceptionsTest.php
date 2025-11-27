@@ -1,16 +1,16 @@
 <?php
 
-use App\Domains\Staff\Actions\ApproveAbsence;
-use App\Domains\Staff\Actions\CreateAbsence;
-use App\Domains\Staff\Actions\RejectAbsence;
-use App\Domains\Staff\DataTransferObjects\CreateAbsenceData;
-use App\Domains\Staff\Enums\AbsenceStatus;
-use App\Domains\Staff\Enums\AbsenceType;
-use App\Domains\Staff\Exceptions\InsufficientVacationDaysException;
-use App\Domains\Staff\Exceptions\InvalidAbsenceStatusException;
-use App\Domains\Staff\Exceptions\ValidationException;
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Models\Shift;
+use App\Actions\ApproveAbsence;
+use App\Actions\CreateAbsence;
+use App\Actions\RejectAbsence;
+use App\DataTransferObjects\CreateAbsenceData;
+use App\Enums\AbsenceStatus;
+use App\Enums\AbsenceType;
+use App\Exceptions\InsufficientVacationDaysException;
+use App\Exceptions\InvalidAbsenceStatusException;
+use App\Exceptions\ValidationException;
+use App\Models\Absence;
+use App\Models\Shift;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Requests\StoreRoleRequest;
-use App\Domains\Staff\Requests\UpdateRoleRequest;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;

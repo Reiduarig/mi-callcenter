@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Domains\Staff\Repositories\AbsenceRepository;
-use App\Domains\Staff\Repositories\Contracts\AbsenceRepositoryInterface;
-use App\Domains\Staff\Repositories\Contracts\ShiftRepositoryInterface;
-use App\Domains\Staff\Repositories\ShiftRepository;
+use App\Repositories\AbsenceRepository;
+use App\Repositories\Contracts\AbsenceRepositoryInterface;
+use App\Repositories\Contracts\ShiftRepositoryInterface;
+use App\Repositories\ShiftRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

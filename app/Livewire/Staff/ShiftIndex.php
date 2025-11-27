@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Actions\DeleteShift;
-use App\Domains\Staff\Models\Shift;
-use App\Domains\Staff\Traits\FiltersDataByRole;
+use App\Actions\DeleteShift;
+use App\Models\Shift;
+use App\Traits\FiltersDataByRole;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;

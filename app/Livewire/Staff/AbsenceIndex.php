@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Staff;
 
-use App\Domains\Staff\Actions\DeleteAbsence;
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Traits\FiltersDataByRole;
+use App\Actions\DeleteAbsence;
+use App\Models\Absence;
+use App\Traits\FiltersDataByRole;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
