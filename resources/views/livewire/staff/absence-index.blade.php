@@ -58,21 +58,21 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($absence->type === 'vacation')
+                                        @if($absence->type->value === 'vacation')
                                             <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded">
-                                                Vacaciones
+                                                {{ $absence->type->label() }}
                                             </span>
-                                        @elseif($absence->type === 'sick')
+                                        @elseif($absence->type->value === 'sick')
                                             <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded">
-                                                Enfermedad
+                                                {{ $absence->type->label() }}
                                             </span>
-                                        @elseif($absence->type === 'personal')
+                                        @elseif($absence->type->value === 'personal')
                                             <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded">
-                                                Personal
+                                                {{ $absence->type->label() }}
                                             </span>
                                         @else
                                             <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded">
-                                                Otro
+                                                {{ $absence->type->label() }}
                                             </span>
                                         @endif
                                     </td>
@@ -80,19 +80,17 @@
                                         {{ $absence->start_date->format('d/m/Y') }} - {{ $absence->end_date->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($absence->status === 'approved')
-                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded">
-                                                Aprobado
-                                            </span>
-                                        @elseif($absence->status === 'pending')
-                                            <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded">
-                                                Pendiente
-                                            </span>
-                                        @else
-                                            <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded">
-                                                Rechazado
-                                            </span>
-                                        @endif
+                                        @php
+                                            $statusColor = match($absence->status->color()) {
+                                                'green' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                                'yellow' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                                'red' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                                default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+                                            };
+                                        @endphp
+                                        <span class="px-2 py-1 text-xs font-medium rounded {{ $statusColor }}">
+                                            {{ $absence->status->label() }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <a href="{{ route('staff.absences.edit', $absence->id) }}" wire:navigate

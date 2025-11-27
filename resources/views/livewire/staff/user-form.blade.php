@@ -110,7 +110,7 @@
                                 <label class="flex items-center">
                                     <input type="checkbox" 
                                            wire:model.defer="selectedRoles"
-                                           value="{{ $role->id }}"
+                                           value="{{ $role->name }}"
                                            class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
                                     <span class="ml-2 text-sm">{{ ucfirst($role->name) }}</span>
                                 </label>
@@ -128,14 +128,14 @@
                                 Supervisor
                             </label>
                             <select id="supervisor_id"
-                                    wire:model.defer="supervisorId" 
+                                    wire:model.defer="supervisor_id" 
                                     class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Sin supervisor</option>
                                 @foreach($supervisors as $supervisor)
                                     <option value="{{ $supervisor->id }}">{{ $supervisor->name }}</option>
                                 @endforeach
                             </select>
-                            @error('supervisorId') 
+                            @error('supervisor_id') 
                                 <span class="text-red-500 text-sm mt-1">{{ $message }}</span> 
                             @enderror
                         </div>
@@ -147,9 +147,9 @@
                             </label>
                             <input type="date" 
                                 id="hired_at"
-                                wire:model.defer="hiredAt" 
+                                wire:model.defer="hired_at" 
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            @error('hiredAt') 
+                            @error('hired_at') 
                                 <span class="text-red-500 text-sm mt-1">{{ $message }}</span> 
                             @enderror
                         </div>
@@ -161,10 +161,10 @@
                             </label>
                             <input type="number" 
                                 id="annual_vacation_days"
-                                wire:model.defer="annualVacationDays" 
+                                wire:model.defer="annual_vacation_days" 
                                 min="0"
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            @error('annualVacationDays') 
+                            @error('annual_vacation_days') 
                                 <span class="text-red-500 text-sm mt-1">{{ $message }}</span> 
                             @enderror
                         </div>
@@ -174,7 +174,7 @@
                     <div>
                         <label class="flex items-center">
                             <input type="checkbox" 
-                                   wire:model.defer="isActive"
+                                   wire:model.defer="is_active"
                                    class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500">
                             <span class="ml-2 text-sm">Usuario activo</span>
                         </label>

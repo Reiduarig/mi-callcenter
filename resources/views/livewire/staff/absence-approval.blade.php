@@ -22,15 +22,10 @@
 
                     <div class="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <p class="text-sm text-gray-700 dark:text-gray-300"><strong>Empleado:</strong> {{ $absence->user->name }}</p>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1"><strong>Tipo:</strong> 
-                            @if($absence->type === 'vacation') Vacaciones
-                            @elseif($absence->type === 'sick') Enfermedad
-                            @elseif($absence->type === 'personal') Personal
-                            @else Otro @endif
-                        </p>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1"><strong>Tipo:</strong> {{ $absence->type->label() }}</p>
                         <p class="text-sm text-gray-700 dark:text-gray-300 mt-1"><strong>Periodo:</strong> {{ $absence->start_date->format('d/m/Y') }} - {{ $absence->end_date->format('d/m/Y') }} ({{ $absence->durationInDays() }} días)</p>
                         
-                        @if($action === 'approve' && $absence->type === 'vacation')
+                        @if($action === 'approve' && $absence->type->consumesVacationDays())
                             <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
                                 <strong>Días disponibles:</strong> {{ $absence->user->availableVacationDays() }} / {{ $absence->user->annual_vacation_days }}
                             </p>

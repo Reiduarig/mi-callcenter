@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Staff;
 
+use App\Domains\Staff\Requests\StoreUserRequest;
+use App\Domains\Staff\Requests\UpdateUserRequest;
+use App\Domains\Staff\Services\UserService;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 
@@ -42,81 +42,79 @@ class UserForm extends Component
         }
     }
 
-    protected function rules(): array
+    private function loadUser(int $userId): void
     {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->userId)],
-            'is_active' => 'boolean',
-            'supervisor_id' => 'nullable|exists:users,id',
-            'hired_at' => 'nullable|date',
-            'annual_vacation_days' => 'required|integer|min:0|max:30',
-            'selectedRoles' => 'required|array|min:1',
-            'selectedRoles.*' => 'exists:roles,name',
-        ];
+        $user = User::with('roles')->findOrFail($userId);
 
-        if (! $this->userId || $this->updatePassword) {
-            $rules['password'] = 'required|string|min:8|confirmed';
-        }
-
-        return $rules;
-    }
-
-    #[On('editUser')]
-    public function loadUser(int $id): void
-    {
-        $user = User::with('roles')->findOrFail($id);
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->is_active = $user->is_active;
         $this->supervisor_id = $user->supervisor_id;
         $this->hired_at = $user->hired_at?->format('Y-m-d');
-        $this->annual_vacation_days = $user->annual_vacation_days ?? 20;
+        $this->annual_vacation_days = $user->annual_vacation_days;
         $this->selectedRoles = $user->roles->pluck('name')->toArray();
-        $this->updatePassword = false;
     }
 
     public function save()
     {
-        $this->validate();
+        // Obtener reglas del Form Request apropiado
+        $requestClass = $this->userId ? UpdateUserRequest::class : StoreUserRequest::class;
+        
+        // Crear el request con los datos del componente para que las reglas condicionales funcionen
+        $request = $requestClass::createFrom(request());
+        $request->replace([
+            'userId' => $this->userId,
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'password_confirmation' => $this->password_confirmation,
+            'is_active' => $this->is_active,
+            'supervisor_id' => $this->supervisor_id,
+            'hired_at' => $this->hired_at,
+            'annual_vacation_days' => $this->annual_vacation_days,
+            'selectedRoles' => $this->selectedRoles,
+            'updatePassword' => $this->updatePassword,
+        ]);
+        
+        $rules = $request->rules();
+        $messages = $request->messages();
+
+        $this->validate($rules, $messages);
 
         try {
+            $service = app(UserService::class);
+
             if ($this->userId) {
                 // Update existing user
                 $user = User::findOrFail($this->userId);
+                $password = ($this->updatePassword && $this->password) ? $this->password : null;
 
-                $data = [
-                    'name' => $this->name,
-                    'email' => $this->email,
-                    'is_active' => $this->is_active,
-                    'supervisor_id' => $this->supervisor_id,
-                    'hired_at' => $this->hired_at,
-                    'annual_vacation_days' => $this->annual_vacation_days,
-                ];
-
-                if ($this->updatePassword && $this->password) {
-                    $data['password'] = Hash::make($this->password);
-                }
-
-                $user->update($data);
-                $user->syncRoles($this->selectedRoles);
+                $service->updateUser(
+                    user: $user,
+                    name: $this->name,
+                    email: $this->email,
+                    isActive: $this->is_active,
+                    supervisorId: $this->supervisor_id,
+                    hiredAt: $this->hired_at,
+                    annualVacationDays: $this->annual_vacation_days,
+                    roleIds: $this->selectedRoles,
+                    password: $password
+                );
 
                 $message = 'Usuario actualizado exitosamente';
             } else {
                 // Create new user
-                $user = User::create([
-                    'name' => $this->name,
-                    'email' => $this->email,
-                    'password' => Hash::make($this->password),
-                    'is_active' => $this->is_active,
-                    'supervisor_id' => $this->supervisor_id,
-                    'hired_at' => $this->hired_at,
-                    'annual_vacation_days' => $this->annual_vacation_days,
-                    'used_vacation_days' => 0,
-                ]);
-
-                $user->assignRole($this->selectedRoles);
+                $service->createUser(
+                    name: $this->name,
+                    email: $this->email,
+                    password: $this->password,
+                    isActive: $this->is_active,
+                    supervisorId: $this->supervisor_id,
+                    hiredAt: $this->hired_at,
+                    annualVacationDays: $this->annual_vacation_days,
+                    roleIds: $this->selectedRoles
+                );
 
                 $message = 'Usuario creado exitosamente';
             }

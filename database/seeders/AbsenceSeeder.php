@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Domains\Staff\Enums\AbsenceStatus;
+use App\Domains\Staff\Enums\AbsenceType;
 use App\Domains\Staff\Models\Absence;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -18,8 +20,17 @@ class AbsenceSeeder extends Seeder
             return;
         }
 
-        $tipos = ['vacation', 'sick', 'personal', 'other'];
-        $estados = ['approved', 'pending', 'rejected'];
+        $tipos = [
+            AbsenceType::Vacation,
+            AbsenceType::Sick,
+            AbsenceType::Personal,
+            AbsenceType::Other,
+        ];
+        $estados = [
+            AbsenceStatus::Approved,
+            AbsenceStatus::Pending,
+            AbsenceStatus::Rejected,
+        ];
         $absenceCount = 0;
 
         // Crear ausencias aleatorias para algunos usuarios
@@ -40,7 +51,7 @@ class AbsenceSeeder extends Seeder
                 $tipo = $tipos[array_rand($tipos)];
 
                 // Si es fecha pasada, aprobar. Si es futura, puede estar pendiente
-                $status = $startDate->isPast() ? 'approved' : $estados[array_rand($estados)];
+                $status = $startDate->isPast() ? AbsenceStatus::Approved : $estados[array_rand($estados)];
 
                 Absence::create([
                     'user_id' => $user->id,

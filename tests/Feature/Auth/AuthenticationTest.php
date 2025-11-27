@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Livewire\Volt\Volt;
+use Spatie\Permission\Models\Role;
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -44,7 +45,11 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('navigation menu can be rendered', function () {
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
+
     $user = User::factory()->create();
+    $role = Role::findByName('administrador');
+    $user->assignRole($role);
 
     $this->actingAs($user);
 
@@ -56,17 +61,17 @@ test('navigation menu can be rendered', function () {
 });
 
 test('users can logout', function () {
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
+
     $user = User::factory()->create();
+    $role = Role::findByName('administrador');
+    $user->assignRole($role);
 
     $this->actingAs($user);
 
-    $component = Volt::test('layout.navigation');
+    $response = $this->post('/logout');
 
-    $component->call('logout');
-
-    $component
-        ->assertHasNoErrors()
-        ->assertRedirect('/');
+    $response->assertRedirect('/login');
 
     $this->assertGuest();
 });

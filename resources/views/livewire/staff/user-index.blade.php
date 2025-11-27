@@ -42,6 +42,9 @@
                                     Roles
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Vacaciones
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Estado
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -72,6 +75,28 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                            $available = $user->availableVacationDays();
+                                            $percentage = $user->annual_vacation_days > 0 
+                                                ? ($available / $user->annual_vacation_days) * 100 
+                                                : 100;
+                                        @endphp
+                                        <div class="text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-medium {{ $percentage > 50 ? 'text-green-600 dark:text-green-400' : ($percentage > 25 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400') }}">
+                                                    {{ $user->used_vacation_days }}
+                                                </span>
+                                                <span class="text-gray-400">/</span>
+                                                <span class="text-gray-700 dark:text-gray-300">
+                                                    {{ $available }}
+                                                </span>
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                de {{ $user->annual_vacation_days }} anuales
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         @if($user->is_active)
                                             <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded">
                                                 Activo
@@ -97,7 +122,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                         No se encontraron usuarios.
                                     </td>
                                 </tr>

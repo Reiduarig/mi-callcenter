@@ -2,6 +2,8 @@
 
 namespace App\Domains\Staff\Actions;
 
+use App\Domains\Staff\DataTransferObjects\UpdateAbsenceData;
+use App\Domains\Staff\Exceptions\ValidationException;
 use App\Domains\Staff\Models\Absence;
 use App\Domains\Staff\Services\ShiftValidationService;
 
@@ -11,13 +13,19 @@ class UpdateAbsence
         private ShiftValidationService $validationService
     ) {}
 
-    public function execute(Absence $absence, array $data): Absence
+    public function execute(Absence $absence, UpdateAbsenceData $data): Absence
     {
-        $userId = $data['user_id'] ?? $absence->user_id;
-        $startDate = $data['start_date'] ?? $absence->start_date->format('Y-m-d');
-        $endDate = $data['end_date'] ?? $absence->end_date->format('Y-m-d');
+        $userId = $data->userId ?? $absence->user_id;
+        $startDate = $data->startDate?->format('Y-m-d') ?? $absence->start_date->format('Y-m-d');
+        $endDate = $data->endDate?->format('Y-m-d') ?? $absence->end_date->format('Y-m-d');
         $oldStatus = $absence->status;
-        $newStatus = $data['status'] ?? $absence->status;
+        $newStatus = $data->status ?? $absence->status;
+        $oldType = $absence->type;
+        $newType = $data->type ?? $absence->type;
+
+        // Calcular días antiguos y nuevos para ajustar vacaciones
+        $oldDays = $absence->durationInDays();
+        $newDays = \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1;
 
         // Validar solo si se modifican fechas o empleado
         if (
@@ -33,34 +41,60 @@ class UpdateAbsence
             );
 
             if (! empty($errors)) {
-                throw new \Exception(implode(' ', $errors));
+                throw new ValidationException($errors);
             }
         }
 
         // Si se aprueba o rechaza, agregar campos de aprobación
         $updateData = [
             'user_id' => $userId,
-            'type' => $data['type'] ?? $absence->type,
+            'type' => $newType,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'status' => $newStatus,
         ];
 
-        if ($oldStatus === 'pending' && $newStatus === 'approved' && auth()->check()) {
+        if ($oldStatus->isPending() && $newStatus->isApproved() && auth()->check()) {
             $updateData['approved_by'] = auth()->id();
             $updateData['approved_at'] = now();
-            $updateData['approval_notes'] = $data['approval_notes'] ?? null;
+            $updateData['approval_notes'] = $data->approvalNotes;
 
-            // Actualizar días de vacaciones usados si es tipo vacation
-            if (($data['type'] ?? $absence->type) === 'vacation') {
-                $employee = $absence->employee;
-                $days = $absence->durationInDays();
-                $employee->increment('used_vacation_days', $days);
+            // Incrementar días de vacaciones usados si es tipo vacation
+            if ($newType->consumesVacationDays()) {
+                $user = $absence->user;
+                $user->increment('used_vacation_days', $newDays);
             }
-        } elseif ($oldStatus === 'pending' && $newStatus === 'rejected' && auth()->check()) {
+        } elseif ($oldStatus->isPending() && $newStatus->isRejected() && auth()->check()) {
             $updateData['approved_by'] = auth()->id();
             $updateData['approved_at'] = now();
-            $updateData['approval_notes'] = $data['approval_notes'] ?? null;
+            $updateData['approval_notes'] = $data->approvalNotes;
+        } elseif ($oldStatus->isApproved() && $newStatus->isApproved()) {
+            // Si ya está aprobada y se editan fechas o tipo, ajustar días
+            $user = $absence->user;
+
+            // Si cambió de vacation a otro tipo, restar días antiguos
+            if ($oldType->consumesVacationDays() && ! $newType->consumesVacationDays()) {
+                $user->decrement('used_vacation_days', $oldDays);
+            }
+            // Si cambió de otro tipo a vacation, sumar días nuevos
+            elseif (! $oldType->consumesVacationDays() && $newType->consumesVacationDays()) {
+                $user->increment('used_vacation_days', $newDays);
+            }
+            // Si ambos son vacation y cambiaron los días, ajustar diferencia
+            elseif ($oldType->consumesVacationDays() && $newType->consumesVacationDays() && $oldDays !== $newDays) {
+                $difference = $newDays - $oldDays;
+                if ($difference > 0) {
+                    $user->increment('used_vacation_days', $difference);
+                } else {
+                    $user->decrement('used_vacation_days', abs($difference));
+                }
+            }
+        } elseif ($oldStatus->isApproved() && ! $newStatus->isApproved()) {
+            // Si se cambia de aprobada a pendiente/rechazada, restar días si era vacation
+            if ($oldType->consumesVacationDays()) {
+                $user = $absence->user;
+                $user->decrement('used_vacation_days', $oldDays);
+            }
         }
 
         $absence->update($updateData);

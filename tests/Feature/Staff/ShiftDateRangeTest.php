@@ -26,6 +26,8 @@ test('single date mode creates one shift', function () {
         ->set('userId', $user->id)
         ->set('shift_template_id', $template->id)
         ->set('date', Carbon::tomorrow()->format('Y-m-d'))
+        ->set('start_time', '08:00')
+        ->set('end_time', '16:00')
         ->set('use_date_range', false)
         ->call('save')
         ->assertHasNoErrors();

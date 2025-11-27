@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Staff;
 
 use App\Domains\Staff\Models\ShiftTemplate;
+use App\Domains\Staff\Services\ShiftTemplateService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
@@ -89,22 +90,31 @@ class ShiftTemplateForm extends Component
     {
         $this->validate();
 
-        $data = [
-            'name' => $this->name,
-            'start_time' => $this->start_time.':00',
-            'end_time' => $this->end_time.':00',
-            'color' => $this->color,
-            'description' => $this->description,
-            'sort_order' => $this->sort_order,
-            'is_active' => $this->is_active,
-        ];
+        $service = app(ShiftTemplateService::class);
 
         if ($this->templateId) {
             $template = ShiftTemplate::findOrFail($this->templateId);
-            $template->update($data);
+            $service->updateTemplate(
+                template: $template,
+                name: $this->name,
+                startTime: $this->start_time,
+                endTime: $this->end_time,
+                color: $this->color,
+                description: $this->description,
+                sortOrder: $this->sort_order,
+                isActive: $this->is_active
+            );
             session()->flash('success', 'Plantilla actualizada correctamente');
         } else {
-            ShiftTemplate::create($data);
+            $service->createTemplate(
+                name: $this->name,
+                startTime: $this->start_time,
+                endTime: $this->end_time,
+                color: $this->color,
+                description: $this->description,
+                sortOrder: $this->sort_order,
+                isActive: $this->is_active
+            );
             session()->flash('success', 'Plantilla creada correctamente');
         }
 

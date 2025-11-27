@@ -28,48 +28,96 @@
                 @enderror
 
                 <form wire:submit.prevent="save" class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Usuario *</label>
-                        <select wire:model="userId" 
-                                class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Seleccione un usuario</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('userId') 
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
-                        @enderror
-                    </div>
+                    @if($canEditUser)
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Usuario *</label>
+                            <select wire:model="userId" 
+                                    class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">Seleccione un usuario</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('userId') 
+                                <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
+                            @enderror
+                        </div>
+                    @else
+                        <!-- Campo oculto para agentes -->
+                        <input type="hidden" wire:model="userId">
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm text-blue-800 dark:text-blue-200">
+                                    Esta ausencia será registrada para: <strong>{{ auth()->user()->name }}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium mb-2">Tipo de ausencia *</label>
-                            <select wire:model="type" 
+                            <select wire:model.live="type" 
                                     class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="vacation">Vacaciones</option>
-                                <option value="sick">Enfermedad</option>
-                                <option value="personal">Personal</option>
-                                <option value="other">Otro</option>
+                                @foreach($typeOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
                             </select>
                             @error('type') 
                                 <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
                             @enderror
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Estado *</label>
-                            <select wire:model="status" 
-                                    class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="approved">Aprobado</option>
-                                <option value="pending">Pendiente</option>
-                                <option value="rejected">Rechazado</option>
-                            </select>
-                            @error('status') 
-                                <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
-                            @enderror
-                        </div>
+                        @if($canEditStatus)
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Estado *</label>
+                                <select wire:model="status" 
+                                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @foreach($statusOptions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @error('status') 
+                                    <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
+                                @enderror
+                            </div>
+                        @else
+                            <!-- Campo oculto para agentes -->
+                            <input type="hidden" wire:model="status" value="pending">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Estado</label>
+                                <div class="px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                                    <span class="text-sm text-yellow-800 dark:text-yellow-200">
+                                        🕐 Pendiente de aprobación
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
                     </div>
+
+                    @if($type === 'vacation')
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-green-800 dark:text-green-200">
+                                        Días de vacaciones disponibles
+                                    </p>
+                                    <p class="text-lg font-bold text-green-900 dark:text-green-100 mt-1">
+                                        {{ auth()->user()->availableVacationDays() }} días disponibles
+                                    </p>
+                                    <p class="text-xs text-green-700 dark:text-green-300 mt-1">
+                                        ({{ auth()->user()->used_vacation_days }} usados de {{ auth()->user()->annual_vacation_days }} anuales)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

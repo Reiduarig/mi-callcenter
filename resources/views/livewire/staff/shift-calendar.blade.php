@@ -187,7 +187,7 @@
                             @foreach($absencesData[$day['date']] as $absence)
                                 <div class="text-xs px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded truncate">
                                     <div class="font-semibold truncate">🏖️ {{ $absence['employee_name'] }}</div>
-                                    <div class="text-xs opacity-75">{{ ucfirst($absence['type']) }}</div>
+                                    <div class="text-xs opacity-75">{{ $absence['type'] }}</div>
                                 </div>
                             @endforeach
                         </div>

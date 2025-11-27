@@ -3,6 +3,7 @@
 namespace App\Domains\Staff\Services;
 
 use App\Domains\Staff\Actions\CreateShift;
+use App\Domains\Staff\DataTransferObjects\CreateShiftData;
 use App\Domains\Staff\Models\ShiftTemplate;
 use App\Models\User;
 use Carbon\Carbon;
@@ -41,7 +42,7 @@ class ShiftAssignmentService
             }
 
             try {
-                $shift = $this->createShift->execute([
+                $data = CreateShiftData::fromArray([
                     'user_id' => $employee->id,
                     'shift_template_id' => $template->id,
                     'date' => $date->format('Y-m-d'),
@@ -49,6 +50,8 @@ class ShiftAssignmentService
                     'end_time' => $template->end_time,
                     'is_custom' => false,
                 ]);
+
+                $shift = $this->createShift->execute($data);
 
                 $created[] = $shift;
             } catch (\Exception $e) {
@@ -96,7 +99,7 @@ class ShiftAssignmentService
                 }
 
                 try {
-                    $shift = $this->createShift->execute([
+                    $data = CreateShiftData::fromArray([
                         'user_id' => $employee->id,
                         'shift_template_id' => $template->id,
                         'date' => $date->format('Y-m-d'),
@@ -104,6 +107,8 @@ class ShiftAssignmentService
                         'end_time' => $template->end_time,
                         'is_custom' => false,
                     ]);
+
+                    $shift = $this->createShift->execute($data);
 
                     $allCreated[] = $shift;
                 } catch (\Exception $e) {
@@ -147,7 +152,7 @@ class ShiftAssignmentService
             $targetDate = Carbon::parse($targetWeekStart)->startOfWeek()->addDays($dayOffset);
 
             try {
-                $shift = $this->createShift->execute([
+                $data = CreateShiftData::fromArray([
                     'user_id' => $employee->id,
                     'shift_template_id' => $sourceShift->shift_template_id,
                     'date' => $targetDate->format('Y-m-d'),
@@ -155,6 +160,8 @@ class ShiftAssignmentService
                     'end_time' => $sourceShift->end_time,
                     'is_custom' => $sourceShift->is_custom,
                 ]);
+
+                $shift = $this->createShift->execute($data);
 
                 $created[] = $shift;
             } catch (\Exception $e) {

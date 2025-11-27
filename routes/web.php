@@ -37,8 +37,11 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Turnos - Permisos según rol
-    Route::middleware('permission:view-shifts')->group(function () {
+    Route::middleware('permission:view-shifts|view-own-shifts')->group(function () {
         Route::get('staff/shifts', ShiftIndex::class)->name('staff.shifts.index');
+    });
+
+    Route::middleware('permission:view-shifts|view-own-calendar')->group(function () {
         Route::get('staff/shifts/calendar', ShiftCalendar::class)->name('staff.shifts.calendar');
     });
 
@@ -58,15 +61,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Ausencias - Agentes pueden crear sus propias ausencias
-    Route::middleware('permission:view-absences')->group(function () {
+    Route::middleware('permission:view-absences|view-own-absences')->group(function () {
         Route::get('staff/absences', AbsenceIndex::class)->name('staff.absences.index');
     });
 
-    Route::middleware('permission:create-absences')->group(function () {
+    Route::middleware('permission:create-absences|create-own-absences')->group(function () {
         Route::get('staff/absences/create', AbsenceForm::class)->name('staff.absences.create');
     });
 
-    Route::middleware('permission:edit-absences')->group(function () {
+    Route::middleware('permission:edit-absences|edit-own-absences')->group(function () {
         Route::get('staff/absences/{absenceId}/edit', AbsenceForm::class)->name('staff.absences.edit');
     });
 

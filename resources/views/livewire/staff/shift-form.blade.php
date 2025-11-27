@@ -30,14 +30,14 @@
                 <form wire:submit.prevent="save" class="space-y-6">
                     <div>
                         <label class="block text-sm font-medium mb-2">Usuario *</label>
-                        <select wire:model="userId" 
+                        <select wire:model="user_id" 
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Seleccione un usuario</option>
+                            <option value="">Seleccionar empleado</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                         </select>
-                        @error('userId') 
+                        @error('user_id')
                             <span class="text-red-600 text-sm mt-1">{{ $message }}</span> 
                         @enderror
                     </div>

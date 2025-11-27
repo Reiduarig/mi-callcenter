@@ -1,7 +1,7 @@
 <div class="py-6" x-on:confirmed-delete.window="$wire.delete($event.detail.id)">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
+        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+            <div class="px-6 pt-6 pb-6 text-gray-900 dark:text-gray-100">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">Turnos</h2>
                     <div class="flex gap-3">
@@ -35,9 +35,10 @@
                         @endforeach
                     </select>
                 </div>
+            </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <div class="overflow-x-auto">
+                <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-900">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -69,20 +70,25 @@
                                         {{ $shift->start_time }} - {{ $shift->end_time }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('staff.shifts.edit', $shift->id) }}"  wire:navigate
-                                           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
-                                            Editar
-                                        </a>
-                                        <button wire:click="confirmDelete({{ $shift->id }})" 
-                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                                            Eliminar
-                                        </button>
+                                        <div class="flex justify-end gap-3">
+                                            <a href="{{ route('staff.shifts.edit', $shift->id) }}"  wire:navigate
+                                               class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                Editar
+                                            </a>
+                                            <button wire:click="confirmDelete({{ $shift->id }})" 
+                                                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                        No se encontraron turnos
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="mt-2 text-sm">No se encontraron turnos</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -90,7 +96,7 @@
                     </table>
                 </div>
 
-                <div class="mt-4">
+                <div class="px-6 pb-6 pt-4">
                     {{ $shifts->links() }}
                 </div>
             </div>

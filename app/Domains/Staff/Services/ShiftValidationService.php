@@ -2,12 +2,18 @@
 
 namespace App\Domains\Staff\Services;
 
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Models\Shift;
+use App\Domains\Staff\Enums\AbsenceStatus;
+use App\Domains\Staff\Repositories\Contracts\AbsenceRepositoryInterface;
+use App\Domains\Staff\Repositories\Contracts\ShiftRepositoryInterface;
 use Carbon\Carbon;
 
 class ShiftValidationService
 {
+    public function __construct(
+        private ShiftRepositoryInterface $shiftRepository,
+        private AbsenceRepositoryInterface $absenceRepository
+    ) {}
+
     /**
      * Valida si un turno puede ser creado o actualizado
      */
@@ -52,14 +58,7 @@ class ShiftValidationService
      */
     public function checkShiftConflict(int $employeeId, string $date, ?int $excludeShiftId = null): ?string
     {
-        $query = Shift::where('user_id', $employeeId)
-            ->where('date', $date);
-
-        if ($excludeShiftId) {
-            $query->where('id', '!=', $excludeShiftId);
-        }
-
-        if ($query->exists()) {
+        if ($this->shiftRepository->existsOnDate($employeeId, $date, $excludeShiftId)) {
             return 'El empleado ya tiene un turno asignado para esta fecha';
         }
 
@@ -84,18 +83,17 @@ class ShiftValidationService
             $end->addDay();
         }
 
-        $query = Shift::where('user_id', $employeeId)
-            ->where('date', $date);
-
-        if ($excludeShiftId) {
-            $query->where('id', '!=', $excludeShiftId);
-        }
-
-        $existingShifts = $query->get();
+        $existingShifts = $this->shiftRepository->findOverlapping(
+            $employeeId,
+            $date,
+            $startTime,
+            $endTime,
+            $excludeShiftId
+        );
 
         foreach ($existingShifts as $shift) {
-            $existingStart = Carbon::parse("{$shift->date} {$shift->start_time}");
-            $existingEnd = Carbon::parse("{$shift->date} {$shift->end_time}");
+            $existingStart = Carbon::parse("{$shift->date->format('Y-m-d')} {$shift->start_time}");
+            $existingEnd = Carbon::parse("{$shift->date->format('Y-m-d')} {$shift->end_time}");
 
             if ($existingEnd->lessThan($existingStart)) {
                 $existingEnd->addDay();
@@ -115,15 +113,7 @@ class ShiftValidationService
      */
     public function checkAbsenceConflict(int $employeeId, string $date): ?string
     {
-        $dateCarbon = Carbon::parse($date);
-
-        $hasAbsence = Absence::where('user_id', $employeeId)
-            ->where('status', 'approved')
-            ->where('start_date', '<=', $dateCarbon)
-            ->where('end_date', '>=', $dateCarbon)
-            ->exists();
-
-        if ($hasAbsence) {
+        if ($this->absenceRepository->hasApprovedAbsenceOnDate($employeeId, $date)) {
             return 'El empleado tiene una ausencia aprobada en esta fecha';
         }
 
@@ -197,25 +187,17 @@ class ShiftValidationService
         string $endDate,
         ?int $excludeAbsenceId = null
     ): ?string {
-        $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
+        $overlapping = $this->absenceRepository->findOverlapping(
+            $employeeId,
+            $startDate,
+            $endDate,
+            $excludeAbsenceId
+        );
 
-        $query = Absence::where('user_id', $employeeId)
-            ->where('status', '!=', 'rejected')
-            ->where(function ($q) use ($start, $end) {
-                $q->whereBetween('start_date', [$start, $end])
-                    ->orWhereBetween('end_date', [$start, $end])
-                    ->orWhere(function ($q2) use ($start, $end) {
-                        $q2->where('start_date', '<=', $start)
-                            ->where('end_date', '>=', $end);
-                    });
-            });
+        // Filtrar solo ausencias no rechazadas
+        $nonRejected = $overlapping->filter(fn ($absence) => $absence->status !== AbsenceStatus::Rejected);
 
-        if ($excludeAbsenceId) {
-            $query->where('id', '!=', $excludeAbsenceId);
-        }
-
-        if ($query->exists()) {
+        if ($nonRejected->isNotEmpty()) {
             return 'Ya existe otra ausencia en este período de fechas';
         }
 
@@ -231,12 +213,11 @@ class ShiftValidationService
         string $endDate,
         ?int $excludeAbsenceId = null
     ): ?string {
-        $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
-
-        $shiftsCount = Shift::where('user_id', $employeeId)
-            ->whereBetween('date', [$start, $end])
-            ->count();
+        $shiftsCount = $this->shiftRepository->countByUserAndDateRange(
+            $employeeId,
+            $startDate,
+            $endDate
+        );
 
         if ($shiftsCount > 0) {
             return "Hay {$shiftsCount} turno(s) programado(s) durante este período. Cancélalos primero.";
@@ -253,9 +234,7 @@ class ShiftValidationService
         $details = [];
 
         // Turnos existentes
-        $shifts = Shift::where('user_id', $employeeId)
-            ->where('date', $date)
-            ->get();
+        $shifts = $this->shiftRepository->getByUserAndDateRange($employeeId, $date, $date);
 
         if ($shifts->isNotEmpty()) {
             $details['shifts'] = $shifts->map(fn ($s) => [
@@ -266,17 +245,13 @@ class ShiftValidationService
         }
 
         // Ausencias
-        $dateCarbon = Carbon::parse($date);
-        $absences = Absence::where('user_id', $employeeId)
-            ->where('start_date', '<=', $dateCarbon)
-            ->where('end_date', '>=', $dateCarbon)
-            ->where('status', 'approved')
-            ->get();
+        $absences = $this->absenceRepository->getByUserAndDateRange($employeeId, $date, $date);
+        $approved = $absences->filter(fn ($a) => $a->status === AbsenceStatus::Approved);
 
-        if ($absences->isNotEmpty()) {
-            $details['absences'] = $absences->map(fn ($a) => [
+        if ($approved->isNotEmpty()) {
+            $details['absences'] = $approved->map(fn ($a) => [
                 'id' => $a->id,
-                'type' => $a->type,
+                'type' => $a->type->label(),
                 'start_date' => $a->start_date->format('Y-m-d'),
                 'end_date' => $a->end_date->format('Y-m-d'),
             ])->toArray();

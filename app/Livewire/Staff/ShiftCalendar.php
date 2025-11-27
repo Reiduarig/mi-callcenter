@@ -4,12 +4,14 @@ namespace App\Livewire\Staff;
 
 use App\Domains\Staff\Models\Absence;
 use App\Domains\Staff\Models\Shift;
-use App\Models\User;
+use App\Domains\Staff\Traits\FiltersDataByRole;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class ShiftCalendar extends Component
 {
+    use FiltersDataByRole;
+
     public int $year;
 
     public int $month;
@@ -28,6 +30,12 @@ class ShiftCalendar extends Component
     {
         $this->year = now()->year;
         $this->month = now()->month;
+
+        // Si es agente, auto-seleccionar su usuario
+        if (auth()->user()->hasRole('agente')) {
+            $this->selectedUserId = auth()->id();
+        }
+
         $this->loadCalendarData();
     }
 
@@ -140,6 +148,9 @@ class ShiftCalendar extends Component
         $shiftsQuery = Shift::with(['user', 'template'])
             ->whereBetween('date', [$calendarStart, $calendarEnd]);
 
+        // Aplicar filtro por rol
+        $shiftsQuery = $this->applyRoleFilter($shiftsQuery);
+
         if ($this->selectedUserId) {
             $shiftsQuery->where('user_id', $this->selectedUserId);
         }
@@ -175,6 +186,9 @@ class ShiftCalendar extends Component
                     });
             });
 
+        // Aplicar filtro por rol
+        $absencesQuery = $this->applyRoleFilter($absencesQuery);
+
         if ($this->selectedUserId) {
             $absencesQuery->where('user_id', $this->selectedUserId);
         }
@@ -198,8 +212,8 @@ class ShiftCalendar extends Component
                 $this->absencesData[$date][] = [
                     'id' => $absence->id,
                     'employee_name' => $absence->user->name,
-                    'type' => $absence->type,
-                    'status' => $absence->status,
+                    'type' => $absence->type->label(),
+                    'status' => $absence->status->label(),
                 ];
                 $currentDate->addDay();
             }
@@ -208,7 +222,8 @@ class ShiftCalendar extends Component
 
     public function render()
     {
-        $users = User::where('is_active', true)->orderBy('name')->get();
+        // Obtener usuarios accesibles según el rol
+        $users = $this->getAccessibleEmployees()->filter(fn ($user) => $user->is_active);
         $currentMonthName = Carbon::create($this->year, $this->month, 1)->locale('es')->monthName;
 
         return view('livewire.staff.shift-calendar', [

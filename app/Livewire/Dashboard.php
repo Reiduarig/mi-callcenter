@@ -2,9 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Domains\Staff\Models\Absence;
-use App\Domains\Staff\Models\Shift;
-use App\Models\User;
+use App\Domains\Staff\Services\DashboardMetricsService;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -23,6 +21,12 @@ class Dashboard extends Component
 
     public array $recentShifts;
 
+    public int $availableVacationDays = 0;
+
+    public int $usedVacationDays = 0;
+
+    public int $annualVacationDays = 0;
+
     public function mount(): void
     {
         $this->loadMetrics();
@@ -30,32 +34,24 @@ class Dashboard extends Component
 
     public function loadMetrics(): void
     {
-        // Employee metrics (todos los users son employees)
-        $this->totalEmployees = User::count();
-        $this->activeEmployees = User::where('is_active', true)->count();
+        $user = auth()->user();
+        $service = app(DashboardMetricsService::class);
 
-        // Agent metrics - count users with agente role
-        $this->totalAgents = User::role('agente')->count();
+        // Obtener métricas según el rol del usuario
+        $metrics = $service->getMetricsForUser($user);
 
-        // Absence metrics
-        $this->onLeaveEmployees = Absence::where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->where('status', 'approved')
-            ->count();
+        $this->totalEmployees = $metrics['totalEmployees'];
+        $this->activeEmployees = $metrics['activeEmployees'];
+        $this->totalAgents = $metrics['totalAgents'];
+        $this->onLeaveEmployees = $metrics['onLeaveEmployees'];
+        $this->pendingAbsences = $metrics['pendingAbsences'];
+        $this->scheduledShiftsToday = $metrics['scheduledShiftsToday'];
+        $this->availableVacationDays = $metrics['availableVacationDays'];
+        $this->usedVacationDays = $metrics['usedVacationDays'];
+        $this->annualVacationDays = $metrics['annualVacationDays'];
 
-        $this->pendingAbsences = Absence::where('status', 'pending')->count();
-
-        // Shift metrics
-        $this->scheduledShiftsToday = Shift::whereDate('date', now())->count();
-
-        // Recent shifts
-        $this->recentShifts = Shift::with('employee')
-            ->whereDate('date', '>=', now())
-            ->orderBy('date')
-            ->orderBy('start_time')
-            ->take(5)
-            ->get()
-            ->toArray();
+        // Obtener turnos recientes según el rol
+        $this->recentShifts = $service->getRecentShifts($user)->toArray();
     }
 
     public function render()

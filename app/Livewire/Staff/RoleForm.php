@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Staff;
 
+use App\Domains\Staff\Requests\StoreRoleRequest;
+use App\Domains\Staff\Requests\UpdateRoleRequest;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -28,13 +30,21 @@ class RoleForm extends Component
 
     public function save()
     {
-        $this->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:roles,name,'.$this->roleId],
-            'selectedPermissions' => ['array'],
-        ], [
-            'name.required' => 'El nombre del rol es obligatorio',
-            'name.unique' => 'Ya existe un rol con este nombre',
+        // Obtener reglas del Form Request apropiado
+        $requestClass = $this->roleId ? UpdateRoleRequest::class : StoreRoleRequest::class;
+        
+        // Crear el request con los datos del componente para que las reglas condicionales funcionen
+        $request = $requestClass::createFrom(request());
+        $request->replace([
+            'roleId' => $this->roleId,
+            'name' => $this->name,
+            'selectedPermissions' => $this->selectedPermissions,
         ]);
+        
+        $rules = $request->rules();
+        $messages = $request->messages();
+
+        $this->validate($rules, $messages);
 
         try {
             if ($this->roleId) {

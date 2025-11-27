@@ -38,7 +38,7 @@ trait FiltersDataByRole
         return $query->whereRaw('1 = 0');
     }
 
-    public function getAccessibleEmployees(): \Illuminate\Database\Eloquent\Collection
+    public function getAccessibleEmployees(): \Illuminate\Support\Collection
     {
         $user = auth()->user();
 

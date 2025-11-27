@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Staff;
 
+use App\Domains\Staff\Exceptions\ShiftTemplateCannotBeDeletedException;
 use App\Domains\Staff\Models\ShiftTemplate;
+use App\Domains\Staff\Services\ShiftTemplateService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ShiftTemplateIndex extends Component
 {
-
     public ?int $deleteId = null;
 
     #[On('templateSaved')]
@@ -27,19 +28,14 @@ class ShiftTemplateIndex extends Component
     {
         try {
             $template = ShiftTemplate::findOrFail($id);
+            $service = app(ShiftTemplateService::class);
 
-            // Verificar si hay turnos usando esta plantilla
-            $shiftsCount = $template->shifts()->count();
+            $service->deleteTemplate($template);
 
-            if ($shiftsCount > 0) {
-                $this->dispatch('toast', message: "No se puede eliminar: hay {$shiftsCount} turnos usando esta plantilla", type: 'error');
-
-                return;
-            }
-
-            $template->delete();
             $this->deleteId = null;
             $this->dispatch('toast', message: 'Plantilla eliminada exitosamente', type: 'success');
+        } catch (ShiftTemplateCannotBeDeletedException $e) {
+            $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error al eliminar: '.$e->getMessage(), type: 'error');
         }
@@ -49,7 +45,9 @@ class ShiftTemplateIndex extends Component
     {
         try {
             $template = ShiftTemplate::findOrFail($id);
-            $template->update(['is_active' => ! $template->is_active]);
+            $service = app(ShiftTemplateService::class);
+
+            $template = $service->toggleStatus($template);
 
             $status = $template->is_active ? 'activada' : 'desactivada';
             $this->dispatch('toast', message: "Plantilla {$status}", type: 'success');

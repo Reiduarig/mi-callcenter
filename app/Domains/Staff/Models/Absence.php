@@ -2,6 +2,8 @@
 
 namespace App\Domains\Staff\Models;
 
+use App\Domains\Staff\Enums\AbsenceStatus;
+use App\Domains\Staff\Enums\AbsenceType;
 use App\Domains\Staff\Traits\Auditable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +28,8 @@ class Absence extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'approved_at' => 'datetime',
+        'type' => AbsenceType::class,
+        'status' => AbsenceStatus::class,
     ];
 
     public function user(): BelongsTo

@@ -21,7 +21,7 @@
             @endcan
 
             {{-- Staff Section --}}
-            @canany(['view-users', 'view-shifts', 'view-absences'])
+            @canany(['view-users', 'view-shifts', 'view-own-shifts', 'view-absences', 'view-own-absences', 'view-own-calendar'])
                 <x-sidebar-section title="Recursos Humanos" />
             
                 @can('view-users')
@@ -32,21 +32,21 @@
                     label="Usuarios" />
                 @endcan
 
-                @can('view-shifts')
+                @canany(['view-shifts', 'view-own-shifts'])
                 <x-sidebar-link 
                     route="{{ route('staff.shifts.index') }}" 
                     active="staff.shifts.index"
                     :icon="'<svg class=\'w-6 h-6\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\' /></svg>'"
-                    label="Turnos" />
-                @endcan
+                    label="{{ auth()->user()->hasRole('agente') ? 'Mis Turnos' : 'Turnos' }}" />
+                @endcanany
 
-                @can('view-calendar')
+                @canany(['view-calendar', 'view-own-calendar'])
                 <x-sidebar-link 
                     route="{{ route('staff.shifts.calendar') }}" 
                     active="staff.shifts.calendar"
                     :icon="'<svg class=\'w-6 h-6\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z\' /></svg>'"
-                    label="Calendario" />
-                @endcan
+                    label="{{ auth()->user()->hasRole('agente') ? 'Mi Calendario' : 'Calendario' }}" />
+                @endcanany
 
                 @can('manage-shift-templates')
                 <x-sidebar-link 
@@ -56,13 +56,13 @@
                     label="Plantillas" />
                 @endcan
 
-                @can('view-absences')
+                @canany(['view-absences', 'view-own-absences'])
                 <x-sidebar-link 
                     route="{{ route('staff.absences.index') }}" 
                     active="staff.absences.*"
                     :icon="'<svg class=\'w-6 h-6\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z\' /></svg>'"
-                    label="Ausencias" />
-                @endcan
+                    label="{{ auth()->user()->hasRole('agente') ? 'Mis Ausencias' : 'Ausencias' }}" />
+                @endcanany
             @endcanany
 
             {{-- System Section --}}

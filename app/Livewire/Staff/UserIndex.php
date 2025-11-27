@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Staff;
 
+use App\Domains\Staff\Exceptions\UserCannotBeDeletedException;
+use App\Domains\Staff\Services\UserService;
 use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -43,18 +45,14 @@ class UserIndex extends Component
     {
         try {
             $user = User::findOrFail($id);
+            $service = app(UserService::class);
 
-            // Prevenir eliminar el propio usuario
-            if ($user->id === auth()->id()) {
-                $this->dispatch('toast', message: 'No puedes eliminar tu propio usuario', type: 'error');
-
-                return;
-            }
-
-            $user->delete();
+            $service->deleteUser($user, auth()->user());
 
             $this->deleteId = null;
             $this->dispatch('toast', message: 'Usuario eliminado exitosamente', type: 'success');
+        } catch (UserCannotBeDeletedException $e) {
+            $this->dispatch('toast', message: $e->getUserMessage(), type: 'error');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error al eliminar: '.$e->getMessage(), type: 'error');
         }
